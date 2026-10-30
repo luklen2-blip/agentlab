@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: agentlab-pro
+    env: node
+    plan: starter
+    region: ohio
+    buildCommand: npm install --production
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+
