@@ -318,7 +318,7 @@ const NICHES_DATA = (function() {
     // 7. ODONTOLOGIA
     odonto: {
       price: { impl: 3600, sup: 1000, lvl: 3, name: 'Intermediária', why: ['Triagem de urgência', 'Leitura da carteirinha', 'Google Agenda'] },
-      label: 'Odontologia', icon: 'tooth', biz: 'Clínica Dentalle', ini: 'DT', color: '#2A6F97', who: 'Bia', agent: 'Bia · recepção odontológica', start: 14 * 3600 + 20 * 60,
+      label: 'Odontologia', icon: 'tooth', biz: 'Consultório Dra. Flávia', ini: 'DF', color: '#2A6F97', who: 'Bia', agent: 'Bia · recepção Dra. Flávia', start: 14 * 3600 + 20 * 60,
       cli: { name: 'Juliana Costa', email: 'juliana.costa@email.com', phone: '(31) 99318-6650' },
       caps: ['Triagem de urgência', 'Convênios', 'Agenda de encaixes', 'Pós-atendimento'],
       flow: [
@@ -334,7 +334,7 @@ const NICHES_DATA = (function() {
         { in: 'Oi! Quebrou um pedacinho do meu dente agora no almoço 😩 Vocês conseguem me atender amanhã cedo?', ig: 'Oi! Sigo vocês aqui. Quebrou um pedaço do meu dente no almoço, conseguem me atender amanhã cedo?' },
         { node: 'receive', log: 'message.received · canal={ch}' },
         { node: 'intent', log: 'intent.classify → urgencia/fratura_dental (0.94)', ctx: { 'Motivo': 'Dente quebrado', 'Urgência': 'Alta' } },
-        { bot: 'Olá Juliana! Aqui é a Bia, da Dentalle Odontologia 🦷' },
+        { bot: 'Olá Juliana! Aqui é a Bia, da Clínica Dra. Flávia 🦷' },
         { bot: 'Compreendo a preocupação! Vamos te acolher sim. Me responda rapidamente: há dor intensa, inchaço na gengiva ou sangramento ativo?' },
         { node: 'triage', log: 'triage.start · protocolo=urgencia_odonto' },
         { in: 'Dói um pouco quando bebo água fria. Sem inchaço e sem sangue' },
