@@ -561,6 +561,47 @@ const NICHES_DATA = (function() {
         { k: ['investimento', 'preco', 'quanto custa'], tag: 'preco', a: 'O investimento na mentoria é de R$ 15.000 à vista no Pix ou 12x de R$ 1.500 no cartão. O retorno médio dos mentorados ocorre já no 2º mês.' }
       ],
       chips: ['Qual o valor do investimento?', 'Tem garantia de resultado?', 'Quantos meses dura?']
+    },
+
+    // 13. PSICOLOGIA CLÍNICA & ACOLHIMENTO
+    psico: {
+      price: { impl: 2800, sup: 800, lvl: 3, name: 'Intermediária', why: ['Triagem ética de acolhimento', 'Google Meet seguro', 'Lembretes anti-falta'] },
+      label: 'Psicologia', icon: 'heart', biz: 'Clínica de Psicologia & Acolhimento', ini: 'CP', color: '#6C5CE7', who: 'Sofia', agent: 'Sofia · acolhimento psicológico', start: 14 * 3600 + 20 * 60,
+      cli: { name: 'Mariana Duarte', email: 'mariana.duarte@email.com', phone: '(11) 98834-5512' },
+      caps: ['Acolhimento humanizado', 'Agenda online e presencial', 'Resoluções do CFP', 'Lembretes'],
+      flow: [
+        n('receive', 'msg', 'Mensagem recebida', 'Paciente busca acolhimento no {canal}', '{api}'),
+        n('intent', 'spark', 'Entende o que a pessoa precisa', 'Identifica ansiedade, terapia ou casal', 'Classificador'),
+        n('triage', 'filter', 'Triagem ética de acolhimento', 'Avalia modalidade (Online / Consultório)', 'Roteiro ético'),
+        n('kb', 'book', 'Orienta sobre sigilo e abordagem', 'Explica duração da sessão (50 min)', 'Código CFP'),
+        AG('Paciente escolhe horário na agenda da psicóloga'), BK(),
+        n('done', 'check', 'Atendimento concluído', 'Link do Meet enviado e lembrete ativo', 'Prontuário')
+      ],
+      script: [
+        { in: 'Olá, boa tarde. Estou passando por uma fase muito difícil de ansiedade e insônia. Gostaria de saber como funciona a terapia', ig: 'Olá! Sigo o perfil de vocês. Estou com crises de ansiedade frequentes e queria iniciar psicoterapia' },
+        { node: 'receive', log: 'message.received · canal={ch}' },
+        { node: 'intent', log: 'intent.classify → psicoterapia/ansiedade (0.97)', ctx: { 'Demanda': 'Ansiedade e Insônia', 'Abordagem': 'TCC / Humanista' } },
+        { bot: 'Olá Mariana! Sou a Sofia, assistente de acolhimento da clínica de psicologia 🌸' },
+        { bot: 'Primeiramente, seja muito bem-vinda. Reconhecer que precisamos de apoio emocional é um passo de muita coragem. Vamos te acolher com todo o cuidado e sigilo.' },
+        { node: 'triage', log: 'triage.start · protocolo=acolhimento_humano' },
+        { bot: 'O psicólogo realiza sessões individuais de 50 minutos focadas no alívio da ansiedade e regulação emocional. Você prefere atendimento Online (por videochamada segura no Google Meet) ou Presencial no consultório?' },
+        { in: 'Online seria ótimo para mim, consigo fazer do meu quarto com fones' },
+        { node: 'triage', log: 'entities.extract → modalidade: online · sigilo: garantido', ctx: { 'Modalidade': 'Online (Google Meet)', 'Paciente': 'Apto' } },
+        { node: 'kb', log: 'kb.search → cfp_resolucao11_2018 · guardrail: sigilo_absoluto' },
+        { bot: 'Perfeito, Mariana! O atendimento online proporciona total conforto e privacidade, em conformidade com as normas do Conselho Federal de Psicologia (CFP).' },
+        { bot: 'O valor da sessão avulsa é R$ 180,00 ou temos plano mensal com desconto. Vou abrir a agenda oficial para você escolher o melhor dia e horário 👇' },
+        { node: 'agenda', log: 'calendar.booking_link → agenda psicoterapia_online' },
+        { cal: { title: 'Sessão de Psicoterapia Individual (Online)', who: 'Psicólogo Clínico', dur: '50 min', place: 'Google Meet Seguro', days: { 20: ['14:00', '16:00', '18:00'], 21: ['10:00', '15:00'], 22: ['11:00', '17:00'] }, pick: [20, '16:00'] } },
+        { node: 'book', log: 'calendar.webhook → sessao criada ter 20/10 16:00 · Meet gerado ✓', ctx: { 'Sessão': 'Ter 20/10 · 16:00' } },
+        { bot: 'Confirmado! Sua primeira sessão está agendada para terça, 20/10 às 16h ✅' },
+        { bot: 'O link protegido do Google Meet e as orientações foram enviados para o seu e-mail e WhatsApp. Cuide-se com carinho, nos vemos em breve! 🤍' },
+        { node: 'done', log: 'conversation.closed · prontuario_atualizado' }
+      ],
+      faq: [
+        { k: ['valor', 'preco', 'sessao'], tag: 'preco', a: 'A sessão individual de 50 minutos é R$ 180 no PIX ou cartão. Emitimos recibo para reembolso no seu plano de saúde (convênio).' },
+        { k: ['convenio', 'reembolso', 'unimed', 'bradesco'], tag: 'reembolso', a: 'Emitimos nota fiscal e relatório de atendimento para você solicitar reembolso integral ou parcial no seu plano de saúde.' }
+      ],
+      chips: ['Aceita convênio ou reembolso?', 'Como funciona o atendimento online?', 'Qual a abordagem da psicóloga?']
     }
   };
 
