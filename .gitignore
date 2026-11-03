@@ -1,0 +1,17 @@
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+Thumbs.db
+.env
+.env.local
+.env.production
+*.log
+.git/
+dist/
+build/
+.cache/
+public_tunnel_url.txt
+

@@ -1,0 +1,30 @@
+{
+  "name": "agentlab-pro",
+  "version": "2.0.0",
+  "description": "AgentLab Pro - Laboratório Interativo de Agentes de IA para WhatsApp e Instagram com Simulador Comercial e Estúdio de Criação",
+  "main": "server.js",
+  "scripts": {
+    "build": "node -e \"console.log('Build OK - AgentLab Pro pronto para producao')\"",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/run_all.js",
+    "test:cloud": "node tests/test_cloud_live.js",
+    "pack": "powershell -ExecutionPolicy Bypass -File scripts/gerar_deploy_zip.ps1"
+  },
+  "keywords": [
+    "ai-agents",
+    "agent-lab",
+    "whatsapp-ai",
+    "instagram-ai",
+    "pix-emv",
+    "rag",
+    "automation",
+    "saas"
+  ],
+  "author": "Luciano - AgentLab Pro",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
