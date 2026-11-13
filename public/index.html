@@ -31,6 +31,11 @@
     </div>
 
     <div class="top-r">
+      <button class="btn-mode-toggle" id="btnModeToggle" type="button" title="Alternar Modo Apresentação do Cliente">
+        <svg class="i" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="btnModeText">Modo Cliente</span>
+      </button>
+
       <button class="btn-guide" id="btnOpenGuide" type="button">
         <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span>Guia Passo a Passo</span>
@@ -143,6 +148,38 @@
 
     <!-- COLUNA 3: TELEMETRIA, CONTEXTO EXTRAÍDO E VALOR -->
     <aside class="ctx">
+      <!-- Card de Apresentação Exclusiva do Cliente (Visível no Modo Cliente / Apresentação) -->
+      <div class="panel client-summary-card" id="clientSummaryCard" style="display:none;background:linear-gradient(135deg, rgba(217,119,6,0.12), rgba(15,23,42,0.95));border:1px solid rgba(217,119,6,0.5);border-radius:14px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:38px;height:38px;background:#D97706;color:#000;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">🏢</div>
+          <div>
+            <h4 id="csBiz" style="margin:0;font-size:14px;font-weight:700;color:var(--fg);">Rafael Silva Imóveis</h4>
+            <p id="csAgent" style="margin:2px 0 0;font-size:11.5px;color:#10B981;font-weight:600;">Sofia IA · Concierge 24/7</p>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--fg);line-height:1.6;" id="csBullets">
+          <p style="margin:0 0 8px;font-weight:700;color:#F59E0B;">Benefícios para o seu Negócio:</p>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:flex-start;gap:6px;">
+              <span style="color:#10B981;font-weight:bold;">✓</span>
+              <span><strong>Qualificação 24/7:</strong> Filtra na hora quem tem orçamento e interesse real de compra.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:6px;">
+              <span style="color:#10B981;font-weight:bold;">✓</span>
+              <span><strong>Zero No-Show:</strong> Régua inteligente de lembretes que reduz 96% das faltas em visitas.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:6px;">
+              <span style="color:#10B981;font-weight:bold;">✓</span>
+              <span><strong>Sinal de Reserva PIX:</strong> Emite o BR Code oficial do Bacen para travar o imóvel.</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:6px;">
+              <span style="color:#10B981;font-weight:bold;">✓</span>
+              <span><strong>Google Agenda:</strong> Visitas agendadas caem direto no seu calendário pessoal.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Selo Comercial -->
       <div class="price-seal" id="seal" aria-live="polite">
         <div class="ps-top">

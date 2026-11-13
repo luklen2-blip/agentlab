@@ -62,6 +62,40 @@ let lastPix = null;
 let stats = { msg: 0, act: 0, botT: [] };
 
 const feed = $('feed');
+let isClientMode = false;
+
+function setClientMode(enable) {
+  isClientMode = enable;
+  const seal = $('seal');
+  const sim = $('simulador');
+  const btnExport = $('btnExportAgent');
+  const clientCard = $('clientSummaryCard');
+  const btnText = $('btnModeText');
+
+  if (isClientMode) {
+    document.body.classList.add('client-mode');
+    if (seal) seal.style.setProperty('display', 'none', 'important');
+    if (sim) sim.style.setProperty('display', 'none', 'important');
+    if (btnExport) btnExport.style.setProperty('display', 'none', 'important');
+    if (clientCard) clientCard.style.display = 'block';
+    if (btnText) btnText.textContent = 'Modo Apresentação (Ativo)';
+
+    if (NICHES[cur]) {
+      const csBiz = $('csBiz');
+      const csAgent = $('csAgent');
+      if (csBiz) csBiz.textContent = NICHES[cur].biz || 'Seu Negócio';
+      if (csAgent) csAgent.textContent = NICHES[cur].agent || 'Atendimento Inteligente 24/7';
+    }
+  } else {
+    document.body.classList.remove('client-mode');
+    if (seal) seal.style.display = '';
+    if (sim) sim.style.display = '';
+    if (btnExport) btnExport.style.display = '';
+    if (clientCard) clientCard.style.display = 'none';
+    if (btnText) btnText.textContent = 'Modo Cliente';
+  }
+}
+
 
 function fmtClock(withSec) {
   const base = (NICHES[cur]?.start || 51600) + clock;
@@ -615,6 +649,11 @@ let simTier = 'niche';
 const simEx = {};
 
 function renderSeal() {
+  if (isClientMode) {
+    const seal = $('seal');
+    if (seal) seal.style.setProperty('display', 'none', 'important');
+    return;
+  }
   const P = NICHES[cur].price || { impl: 3500, sup: 1000, lvl: 3, name: 'Intermediária', why: ['Automação WhatsApp', 'Pix Integrado'] };
   $('psVal').innerHTML = `<span class="nw"><em>${brl(P.impl)}</em><small>implantação</small></span><span class="nw"><em>+ ${brl(P.sup)}</em><small>/mês de suporte</small></span>`;
   $('psCx').innerHTML = `<span>Complexidade</span><span class="dots">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= P.lvl ? 'on' : ''}"></i>`).join('')}</span><b>${P.name}</b>`;
@@ -750,6 +789,13 @@ function initControls() {
     $('simulador').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   renderExtras();
+
+  const btnMode = $('btnModeToggle');
+  if (btnMode) {
+    btnMode.onclick = () => {
+      setClientMode(!isClientMode);
+    };
+  }
 
   // Seletor de Tema
   document.querySelectorAll('[data-th]').forEach(b => {
@@ -949,6 +995,9 @@ function renderNicheRail() {
       cur = b.dataset.k;
       container.querySelectorAll('.niche').forEach(x => x.setAttribute('aria-pressed', x === b));
       try { localStorage.setItem('agentlab-niche', cur); } catch (e) {}
+      if (isClientMode) {
+        setClientMode(true);
+      }
       start();
     };
   });
@@ -971,6 +1020,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
   renderNicheRail();
   initControls();
+
+  // Ativação do Modo Cliente (Oculta ganhos da agência, simulador de faturamento e precificação interna)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientParam = urlParams.get('client') || urlParams.get('demo') || urlParams.get('modo');
+    const shouldBeClient = clientParam === '1' || clientParam === 'cliente' || cur === 'rafael';
+    if (clientParam !== '0' && shouldBeClient) {
+      setClientMode(true);
+    }
+  } catch (e) {}
 
   // Restaurar tema
   try {

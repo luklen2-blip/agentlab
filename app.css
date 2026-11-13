@@ -1242,3 +1242,46 @@ svg.i {
 .foot a { color: var(--accent); text-decoration: none; font-weight: 600; }
 .foot a:hover { text-decoration: underline; }
 
+/* ===================================================================
+   MODO APRESENTAÇÃO DO CLIENTE (OCULTA INFORMAÇÕES DE GANHOS E AGÊNCIA)
+   =================================================================== */
+body.client-mode #seal,
+body.client-mode #simulador,
+body.client-mode #btnExportAgent,
+body.client-mode .price-seal,
+body.client-mode section.sim,
+body.client-mode .sim-h {
+  display: none !important;
+}
+
+body.client-mode .client-summary-card {
+  display: block !important;
+}
+
+.btn-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  transition: all 0.2s ease;
+}
+
+.btn-mode-toggle:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+body.client-mode .btn-mode-toggle {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #10B981;
+  color: #10B981;
+}
+
