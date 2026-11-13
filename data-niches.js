@@ -10,7 +10,55 @@ const NICHES_DATA = (function() {
   const PAY = (t) => n('payment', 'card', t || 'Pix e comprovante', 'Envia o Pix, lê o comprovante e confere no banco', 'Pix + leitura de comprovante');
 
   const niches = {
-    // 1. ADVOCACIA
+    // 1. SORVETERIA ARTESANAL & DELIVERY D'ALÊ (DESTAQUE)
+    dale: {
+      price: { impl: 2800, sup: 800, lvl: 3, name: 'Intermediária', why: ['Cardápio inteligente com sabores do dia', 'Cálculo de entrega por bairro', 'Pix copia-e-cola com leitura de comprovante', 'Alerta automático para a Alessandra'] },
+      label: 'Sorveteria D’ALÊ', icon: 'icecream', biz: 'Sorveteria Artesanal D’ALÊ', ini: 'DA', color: '#FF6B8B', who: 'Sofia', agent: 'Sofia · recepção e pedidos D’ALÊ', start: 14 * 3600 + 20 * 60,
+      cli: { name: 'Mariana Duarte', email: 'mariana.duarte@email.com', phone: '(11) 98834-5512', bank: 'Banco Inter', bkc: '#F97316' },
+      caps: ['Acolhimento caloroso', 'Cardápio de sabores', 'Montagem de potes e combos', 'Pix imediato', 'Aviso à Alessandra'],
+      flow: [
+        n('receive', 'msg', 'Mensagem recebida', 'Cliente chama no {canal}', '{api}'),
+        n('intent', 'spark', 'Entende o que a pessoa precisa', 'Identifica sabor, tamanho e entrega', 'Classificador'),
+        n('menu', 'book', 'Cardápio do dia', 'Apresenta os sabores artesanais frescos', 'Cardápio D’ALÊ'),
+        n('cart', 'cart', 'Montagem do pedido', 'Pote de 500ml, 1 Litro ou picolés', 'Carrinho'),
+        n('address', 'pin', 'Entrega ou Retirada', 'Coleta endereço e calcula taxa de frete', 'Logística'),
+        PAY('Pix da Alessandra'),
+        n('done', 'check', 'Pedido concluído', 'Alessandra recebe comanda pronta para despachar', 'WhatsApp')
+      ],
+      script: [
+        { in: 'Oi, boa tarde! Gostaria de saber os sabores de sorvete que vocês têm hoje', ig: 'Oi! Vi as fotos dos potes de sorvete, vocês entregam hoje?' },
+        { node: 'receive', log: 'message.received · canal={ch}' },
+        { node: 'intent', log: 'intent.classify → cardapio_sabores (0.98)', ctx: { 'Interesse': 'Sorvete Artesanal', 'Canal': 'WhatsApp' } },
+        { bot: 'Olá! Sou a Sofia, assistente da Alessandra aqui na Sorveteria D’ALÊ 🍨✨' },
+        { bot: 'Seja muito bem-vindo(a)! Nossos sorvetes são artesanais, feitos com ingredientes frescos e muito carinho.' },
+        { node: 'menu', log: 'menu.fetch → sabores_do_dia' },
+        { bot: 'Hoje nós temos:\n🍫 *Chocolatudo Trufado*\n🍓 *Ninho com Morango Fresco*\n🥥 *Coco Cremoso Artesanal*\n🍋 *Maracujá & Manga (Zero Lactose)*\n🥜 *Pistache Premium*' },
+        { bot: 'Você prefere para entrega no conforto de casa ou retirada no balcão?' },
+        { in: 'Quero para entrega! Um pote de 1 Litro metade Ninho com Morango e metade Chocolatudo' },
+        { node: 'cart', log: 'cart.add → pote_1L · ninho_morango + chocolatudo', ctx: { 'Item': 'Pote 1L (2 sabores)', 'Valor': 'R$ 42,00' } },
+        { bot: 'Hummm, combinação maravilhosa! Pote de 1 Litro recheadíssimo anotado 😋' },
+        { node: 'address', log: 'geo.request → endereco' },
+        { bot: 'Qual é o seu nome completo e o endereço de entrega (rua, número e bairro)?' },
+        { in: 'Mariana Duarte, Rua das Palmeiras, 340, Bairro Jardim' },
+        { node: 'address', log: 'geo.validate → Bairro Jardim · taxa R$ 6,00 · tempo 35 min', ctx: { 'Cliente': 'Mariana Duarte', 'Taxa': 'R$ 6,00', 'Total': 'R$ 48,00' } },
+        { card: { type: 'confirm', title: 'Resumo do Pedido D’ALÊ', rows: [['1x Pote 1L (Ninho c/ Morango + Chocolatudo)', 'R$ 42,00'], ['Taxa de Entrega (Bairro Jardim)', 'R$ 6,00']], total: ['Total a Pagar', 'R$ 48,00'] } },
+        { node: 'payment', log: 'pix.charge_create → R$ 48,00' },
+        { bot: 'O tempo estimado de entrega hoje é de 30 a 40 minutinhos. Segue a chave PIX da Alessandra para liberação imediata 👇' },
+        { card: { type: 'pix', amount: 'R$ 48,00', to: 'Alessandra - Sorveteria D’ALÊ' } },
+        { in: 'Prontinho, fiz o Pix! Segue o comprovante' },
+        { receipt: true },
+        { node: 'done', log: 'payment.confirmed · handoff → Alessandra despachar pedido' },
+        { bot: 'Pagamento confirmado com sucesso! ✅\n\nA Alessandra já recebeu o seu pedido na cozinha e está separando com todo carinho. Assim que o motoboy sair, te aviso por aqui. Muito obrigada e bom apetite! 🍨🛵💨' }
+      ],
+      faq: [
+        { k: ['entrega', 'taxa', 'frete', 'bairro'], tag: 'entrega', a: 'Entregamos em toda a região! A taxa varia entre R$ 5 e R$ 10 conforme o bairro. O tempo médio é de 30 a 45 minutos.' },
+        { k: ['lactose', 'vegano', 'zero', 'fruta'], tag: 'restricoes', a: 'Temos opções de frutas naturais à base de água (zero lactose) e sem adição de açúcares! Pergunte pelo sabor do dia.' },
+        { k: ['onde', 'retirar', 'endereco', 'loja'], tag: 'local', a: 'Para retirada no balcão, o pedido fica pronto em cerca de 15 minutos. Avisamos assim que a embalagem térmica estiver selada!' }
+      ],
+      chips: ['Quais as opções sem lactose?', 'Quanto é a taxa de entrega?', 'Posso retirar no balcão?']
+    },
+
+    // 2. ADVOCACIA
     adv: {
       price: { impl: 3800, sup: 1100, lvl: 4, name: 'Avançada', why: ['Triagem com regras da OAB', 'Google Agenda', 'CRM jurídico'] },
       label: 'Advocacia', icon: 'scale', biz: 'Ferraz & Lima Advocacia', ini: 'FL', color: '#1F3A5F', who: 'Júlia', agent: 'Júlia · recepção jurídica', start: 14 * 3600 + 20 * 60,
@@ -362,48 +410,60 @@ const NICHES_DATA = (function() {
       chips: ['Quanto custa clareamento?', 'Atendem plano odontológico?', 'Fazem alinhador invisível?']
     },
 
-    // 8. IMOBILIÁRIA
-    imob: {
-      price: { impl: 4500, sup: 1300, lvl: 4, name: 'Avançada', why: ['Busca no catálogo de imóveis', 'Agenda dos corretores', 'CRM imobiliário'] },
-      label: 'Imobiliária', icon: 'home', biz: 'Alto Vale Imóveis', ini: 'AV', color: '#4B5D3A', who: 'Thiago', agent: 'Thiago · atendimento de locação', start: 14 * 3600 + 20 * 60,
-      cli: { name: 'Pedro Henrique Lima', email: 'pedro.lima@email.com', phone: '(31) 99872-0314' },
-      caps: ['Qualificação de lead', 'Busca de imóveis', 'Agenda de visitas', 'CRM'],
+    // 8. RAFAEL SILVA - CORRETOR DE IMÓVEIS (CRECI/SP 248.910-F) & SOFIA IA (DESTAQUE)
+    rafael: {
+      price: { impl: 4800, sup: 1400, lvl: 4, name: 'Avançada', why: ['Busca no portfólio de alto padrão', 'Agendamento presencial com régua anti-no-show', 'Sinal de reserva via PIX oficial (EMV)', 'CRM integrado com n8n'] },
+      label: 'Rafael Imóveis', icon: 'home', biz: 'Rafael Silva Imóveis', ini: 'RS', color: '#D97706', who: 'Sofia', agent: 'Sofia · concierge do Rafael Silva', start: 14 * 3600 + 20 * 60,
+      cli: { name: 'Lucas Ferreira', email: 'lucas.ferreira@email.com', phone: '(11) 98765-4321', bank: 'Nubank', bkc: '#820AD1' },
+      caps: ['Qualificação de compradores', 'Portfólio Jardins e Pinheiros', 'Visitas presenciais anti-no-show', 'Sinal de reserva PIX', 'CRECI/SP 248.910-F'],
       flow: [
-        n('receive', 'msg', 'Mensagem recebida', 'Lead chega pelo {canal}', '{api}'),
-        n('intent', 'spark', 'Entende o que a pessoa precisa', 'Identifica compra ou locação e a região', 'Classificador'),
-        n('qualify', 'filter', 'Qualificação do lead', 'Orçamento, vaga, pet e prazo de mudança', 'Roteiro de locação'),
-        n('search', 'home', 'Busca no catálogo', 'Filtra imóveis compatíveis e disponíveis', 'Catálogo de imóveis'),
-        AG('Lead escolhe o horário da visita com o corretor'), BK(),
-        n('crm', 'db', 'Registro no CRM', 'Lead com perfil e imóvel de interesse', 'CRM imobiliário'),
-        n('done', 'check', 'Atendimento concluído', 'Corretor recebe a visita pronta', 'Handoff')
+        n('receive', 'msg', 'Mensagem recebida', 'Lead chama no {canal}', '{api}'),
+        n('intent', 'spark', 'Entende o que a pessoa precisa', 'Identifica compra, locação ou investimento em SP', 'Classificador'),
+        n('qualify', 'filter', 'Qualificação de alto padrão', 'Orçamento, bairros nobres, suítes e vagas', 'Roteiro Imobiliário'),
+        n('search', 'home', 'Portfólio exclusivo', 'Filtra imóveis compatíveis e disponíveis', 'Portfólio Rafael Silva'),
+        AG('Lead escolhe o horário da visita presencial com o Rafael'), BK(),
+        PAY('Sinal de reserva do imóvel via PIX Oficial'),
+        n('crm', 'db', 'Registro no CRM', 'Lead com perfil, visita VIP e imóvel de interesse', 'CRM Imobiliário'),
+        n('done', 'check', 'Atendimento concluído', 'Rafael recebe ficha completa e visita confirmada', 'Handoff')
       ],
       script: [
-        { in: 'Boa tarde! Tô procurando apê pra alugar perto da Savassi, 2 quartos', ig: 'Oi! Vi o reels do apê no Funcionários. Procuro 2 quartos pra alugar perto da Savassi, tem opções?' },
+        { in: 'Olá, boa tarde! Gostaria de conhecer apartamentos de alto padrão à venda nos Jardins ou Pinheiros', ig: 'Oi Rafael! Vi o vídeo do apartamento nos Jardins. Ainda está disponível para visita?' },
         { node: 'receive', log: 'message.received · canal={ch}' },
-        { node: 'intent', log: 'intent.classify → locacao_residencial (0.95)', ctx: { 'Interesse': 'Locação Residencial', 'Região': 'Savassi / Funcionários', 'Tipologia': '2 Quartos' } },
-        { bot: 'Boa tarde! Aqui é o Thiago, da Alto Vale Imóveis 🏠' },
-        { bot: 'Temos excelentes oportunidades na região! Qual a sua faixa de orçamento total (aluguel + condomínio + IPTU) e você necessita de vaga de garagem ou aceitação de pet?' },
-        { node: 'qualify', log: 'qualify.start · roteiro=locacao_v2' },
-        { in: 'Até uns R$ 3.500 com tudo. Preciso de 1 vaga e tenho um gato' },
-        { node: 'qualify', log: 'entities.extract → orcamento≤3500, vaga=1, pet=sim', ctx: { 'Orçamento Máx': 'R$ 3.500', 'Vagas': '1', 'Pet': 'Gato' } },
-        { node: 'search', log: 'catalog.search → 3 imóveis pet-friendly compatíveis' },
-        { bot: 'Filtrei 3 apartamentos impecáveis que aceitam pet e se encaixam exatamente no seu orçamento 👇' },
-        { card: { type: 'listing', title: 'Apartamentos Selecionados na Savassi', sub: '2 quartos · 1 vaga · Pet friendly', items: [{ t: 'Rua Tomé de Souza · Savassi', d: '1 suíte · 68 m² · Lazer completo', p: 'R$ 3.380' }, { t: 'Rua dos Inconfidentes · Funcionários', d: 'Varanda gourmet · 72 m²', p: 'R$ 3.150' }, { t: 'Rua Cláudio Manoel · Funcionários', d: 'Reformado · 60 m² · Portaria 24h', p: 'R$ 2.900' }], note: 'Valores totais estimados com taxa condominial e IPTU.' } },
-        { in: 'Gostei muito do apartamento da Rua dos Inconfidentes! Como faço pra visitar?' },
-        { node: 'search', log: 'listing.select → #AV-2218 · Rua Inconfidentes', ctx: { 'Imóvel Escolhido': 'Inconfidentes (R$ 3.150)' } },
-        { bot: 'Esse apartamento tem sol da manhã e varanda ventilada! Te enviei a agenda da corretora Ana Ribeiro para marcar a visita 👇' },
-        { cal: { title: 'Visita Presencial · Imóvel Rua Inconfidentes', who: 'Ana Ribeiro · Corretora Credenciada', dur: '45 min', place: 'Rua dos Inconfidentes · Portaria', days: { 19: ['12:00', '18:30'], 20: ['10:00', '17:00'], 21: ['18:00'] }, pick: [20, '17:00'] } },
-        { node: 'book', log: 'calendar.webhook → ter 20/10 17:00 · corretora notificada ✓', ctx: { 'Visita': 'Ter 20/10 · 17:00' } },
-        { bot: 'Visita agendada para terça-feira, 20/10 às 17h! A Ana te encontrará na portaria do edifício.' },
-        { bot: 'Trabalhamos com garantia digital sem fiador (seguro-fiança aprovado em 15 minutos). Bom domingo!' },
-        { node: 'crm', log: 'crm.create_lead → ficha completa enviada à corretora' },
-        { node: 'done', log: 'conversation.closed · handoff → Ana Ribeiro' }
+        { node: 'intent', log: 'intent.classify → compra_alto_padrao (0.98)', ctx: { 'Interesse': 'Compra de Imóvel', 'Região': 'Jardins / Pinheiros', 'Perfil': 'Alto Padrão' } },
+        { bot: 'Olá! Sou a Sofia, secretária virtual e concierge do corretor imobiliário Rafael Silva (CRECI/SP 248.910-F) 🏙️🔑' },
+        { bot: 'Seja muito bem-vindo! O Rafael seleciona pessoalmente as melhores oportunidades de São Paulo com total assessoria jurídica.' },
+        { bot: 'Para eu te apresentar os imóveis ideais: qual a sua faixa de investimento pretendida e você busca quantas suítes e vagas?' },
+        { node: 'qualify', log: 'qualify.start · roteiro=compra_sp_v2' },
+        { in: 'Estou buscando entre R$ 1,5M e R$ 2,5M, com pelo menos 2 ou 3 suítes e 2 vagas' },
+        { node: 'qualify', log: 'entities.extract → orcamento=[1.5M..2.5M], suites≥2, vagas≥2', ctx: { 'Orçamento': 'R$ 1,5M a R$ 2,5M', 'Suítes': '3 Suítes', 'Vagas': '2 Vagas', 'Status': 'Qualificado VIP' } },
+        { node: 'search', log: 'portfolio.match → 3 unidades exclusivas nos Jardins e Pinheiros' },
+        { bot: 'Excelente perfil! Selecionei 3 imóveis impecáveis do portfólio exclusivo do Rafael que atendem com perfeição 👇' },
+        { card: { type: 'listing', title: 'Portfólio Selecionado · Jardins & Pinheiros', sub: 'Alto padrão · Prontos para morar · Documentação 100% checada', items: [
+          { t: 'Alameda Lorena · Jardins', d: '142 m² · 3 suítes · Varanda gourmet · 2 vagas', p: 'R$ 1.850.000' },
+          { t: 'Rua dos Pinheiros · Pinheiros', d: 'Studio Premium · 48 m² · Mobiliado · 1 vaga', p: 'R$ 780.000' },
+          { t: 'Av. Rouxinol · Moema Pássaros', d: 'Cobertura Duplex · 210 m² · 3 suítes · Hidro', p: 'R$ 3.200.000' }
+        ], note: 'Valores negociáveis e assessoria jurídica completa por Rafael Silva (CRECI/SP 248.910-F).' } },
+        { in: 'Adorei o apartamento da Alameda Lorena nos Jardins! Como podemos agendar uma visita presencial?' },
+        { node: 'search', log: 'listing.select → IMOB-001 · Alameda Lorena · Jardins', ctx: { 'Imóvel Escolhido': 'Alameda Lorena (R$ 1.850.000)' } },
+        { bot: 'Esse imóvel na Lorena é uma jóia rara, com sol da manhã e vista livre! Vou abrir a agenda do Rafael para você escolher o melhor dia e horário 👇' },
+        { cal: { title: 'Visita VIP Presencial · Alameda Lorena', who: 'Rafael Silva · Corretor de Imóveis (CRECI/SP)', dur: '50 min', place: 'Alameda Lorena, Jardins · Hall Social', days: { 20: ['10:30', '14:30', '16:30'], 21: ['11:00', '15:00'], 22: ['09:30', '17:00'] }, pick: [20, '14:30'] } },
+        { node: 'book', log: 'calendar.webhook → ter 20/10 14:30 · visita VIP agendada · régua anti-no-show ativada ✓', ctx: { 'Visita': 'Ter 20/10 · 14:30' } },
+        { bot: 'Visita confirmada para terça-feira, 20/10 às 14h30 com o Rafael Silva na Alameda Lorena! 📅✨' },
+        { bot: 'Para garantir exclusividade na prioridade de proposta e travar a agenda do proprietário, você pode emitir o sinal simbólico de reserva de R$ 500,00 via PIX Oficial com emissão de recibo garantido pelo CRECI:' },
+        { node: 'payment', log: 'pix.charge_create → R$ 500,00 · sinal de reserva IMOB-001' },
+        { card: { type: 'pix', amount: 'R$ 500,00', to: 'Rafael Silva - Corretor de Imóveis' } },
+        { in: 'Prontinho, fiz o Pix de R$ 500 pelo Nubank! Segue o comprovante' },
+        { receipt: true },
+        { node: 'crm', log: 'crm.lead_update → ficha completa enviada ao WhatsApp do Rafael' },
+        { node: 'done', log: 'payment.confirmed · conversation.closed · handoff → Rafael Silva' },
+        { bot: 'Sinal de reserva confirmado com sucesso! ✅\n\nO Rafael Silva já recebeu a sua ficha completa com a data da visita e o comprovante no WhatsApp dele.\n\nEnviaremos um lembrete automático 2 horas antes da visita. Muito obrigado e até breve! 🤝🏢' }
       ],
       faq: [
-        { k: ['fiador', 'garantia'], tag: 'garantia', a: 'Não precisa de fiador! Aceitamos seguro-fiança com análise instantânea, título de capitalização ou caução.' },
-        { k: ['anunciar', 'proprietario', 'vender meu'], tag: 'captacao', a: 'Avaliamos e fotografamos seu imóvel profissionalmente sem custos de cadastro. Deseja agendar a visita de captação?' }
+        { k: ['creci', 'segurança', 'registro', 'quem é'], tag: 'creci', a: 'O Rafael Silva é corretor credenciado sob o CRECI/SP 248.910-F, garantindo assessoria jurídica completa em todas as etapas da compra, venda e locação.' },
+        { k: ['financiamento', 'banco', 'caixa', 'itau', 'taxa'], tag: 'financiamento', a: 'Aprovamos sua carta de crédito e financiamento imobiliário em até 24h junto aos principais bancos (Itaú, Bradesco, Santander e Caixa) com as menores taxas do mercado.' },
+        { k: ['vender', 'avaliar', 'anunciar', 'proprietario'], tag: 'captacao', a: 'Deseja vender seu imóvel de alto padrão nos Jardins, Pinheiros, Moema ou Alphaville? O Rafael realiza avaliação mercadológica e fotos profissionais gratuitas para captação exclusiva.' }
       ],
-      chips: ['Precisa de fiador?', 'Aceita caução?', 'Quero anunciar meu imóvel']
+      chips: ['Qual o CRECI do Rafael?', 'Vocês aprovam financiamento?', 'Quero avaliar e vender meu imóvel', 'Como funciona o sinal de reserva?']
     },
 
     // 9. CONDOMÍNIO & SÍNDICO PROFISSIONAL (NOVO)
@@ -604,6 +664,11 @@ const NICHES_DATA = (function() {
       chips: ['Aceita convênio ou reembolso?', 'Como funciona o atendimento online?', 'Qual a abordagem do Dr. Sérgio?']
     }
   };
+
+  // Alias para garantir compatibilidade retroativa com links que usem #imob
+  if (niches.rafael) {
+    niches.imob = niches.rafael;
+  }
 
   return { niches };
 })();

@@ -30,7 +30,8 @@ const IC = {
   brush: '<path d="M14 4l6 6-8 8H6v-6z"/><path d="M4 20l2-2"/>',
   tooth: '<path d="M7 3c-2.5 0-4 2-4 4.5 0 3 1.5 4.5 2 7 .5 2.5 1 6.5 2.8 6.5 1.6 0 1.7-3.5 2.2-5 .3-1 .7-1.5 2-1.5s1.7.5 2 1.5c.5 1.5.6 5 2.2 5 1.8 0 2.3-4 2.8-6.5.5-2.5 2-4 2-7C21 5 19.5 3 17 3c-2 0-3 1-5 1S9 3 7 3z"/>',
   home: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
-  fork: '<path d="M7 3v8a2 2 0 0 0 2 2v8M11 3v8M7 7h4M17 3c-2 2-2 6 0 8v10"/>'
+  fork: '<path d="M7 3v8a2 2 0 0 0 2 2v8M11 3v8M7 7h4M17 3c-2 2-2 6 0 8v10"/>',
+  icecream: '<path d="M12 2a5 5 0 0 0-4.9 4c-.1.3-.1.7-.1 1a5 5 0 0 0 10 0c0-.3 0-.7-.1-1A5 5 0 0 0 12 2z"/><path d="M7 11l5 11 5-11H7z"/>'
 };
 
 const ic = (k) => `<svg class="i" viewBox="0 0 24 24">${IC[k] || IC.spark}</svg>`;
@@ -49,7 +50,7 @@ const $ = s => document.getElementById(s);
 
 // Estado da Aplicação
 const NICHES = { ...NICHES_DATA.niches };
-let cur = 'adv';
+let cur = 'dale';
 let ch = 'wa';
 let runId = 0;
 let paused = false;
@@ -901,6 +902,7 @@ function goToGuideStep(step) {
 
 // Ações Rápidas Executadas a Partir do Guia
 window.selectNicheFromGuide = function(k) {
+  if (k === 'imob' && NICHES.rafael) k = 'rafael';
   if (NICHES[k]) {
     cur = k;
     $('niches').querySelectorAll('.niche').forEach(x => x.setAttribute('aria-pressed', x.dataset.k === cur));
@@ -934,7 +936,9 @@ window.openExportFromGuide = function() {
 
 function renderNicheRail() {
   const container = $('niches');
-  container.innerHTML = Object.entries(NICHES).map(([k, v]) => `
+  container.innerHTML = Object.entries(NICHES)
+    .filter(([k]) => k !== 'imob')
+    .map(([k, v]) => `
     <button class="niche" data-k="${k}" aria-pressed="${k === cur}">
       <span class="ni">${ic(v.icon)}</span>${esc(v.label)}
     </button>
@@ -952,15 +956,16 @@ function renderNicheRail() {
 
 // Boot Inicial
 window.addEventListener('DOMContentLoaded', () => {
-  // Suporte a link direto por nicho (?niche=odonto ou #odonto)
+  // Suporte a link direto por nicho (?niche=odonto ou #odonto ou #rafael ou #imob)
   try {
     const urlParams = new URLSearchParams(window.location.search);
-    const paramNiche = urlParams.get('niche') || window.location.hash.replace('#', '');
+    let paramNiche = urlParams.get('niche') || window.location.hash.replace('#', '');
+    if (paramNiche === 'imob' && NICHES.rafael) paramNiche = 'rafael';
     if (paramNiche && NICHES[paramNiche]) {
       cur = paramNiche;
     } else {
       const saved = localStorage.getItem('agentlab-niche');
-      if (saved && NICHES[saved]) cur = saved;
+      if (saved && (NICHES[saved] || saved === 'imob')) cur = saved === 'imob' ? 'rafael' : saved;
     }
   } catch (e) {}
 

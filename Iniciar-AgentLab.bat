@@ -27,8 +27,8 @@ set PORT=3055
 echo [OK] Servidor configurado na porta %PORT%
 echo [OK] Monitoramento em: http://localhost:%PORT%/api/health
 echo.
-echo Abrindo o navegador automaticamente...
-start http://localhost:%PORT%
+echo Abrindo o navegador diretamente na Sorveteria D'ALÊ...
+start http://localhost:%PORT%/?niche=dale
 
 node server.js
 pause

@@ -25,7 +25,7 @@ O **AgentLab Pro** foi desenvolvido como uma evolução aprofundada da plataform
    - **Restaurante & Delivery (Gabi · Brasa Mineira):** Cardápio interativo, taxa de entrega por bairro, combo e comanda no KDS.
    - **Pet Shop (Lu · Patas & Cia):** Ficha do pet no CRM, táxi dog (leva e traz) e recompra automática de ração.
    - **Odontologia (Bia · Clínica Dentalle):** Triagem de urgência de fratura dental, OCR de carteirinha de convênio e encaixe.
-   - **Imobiliária (Thiago · Alto Vale Imóveis):** Qualificação de lead, busca de apartamentos pet-friendly e visita com corretora.
+   - **Rafael Silva Imóveis (Sofia · Secretária Imobiliária 24/7):** Qualificação de alto padrão (Jardins, Pinheiros, Moema, Alphaville), catálogo exclusivo, agendamento de visita VIP presencial com régua anti-no-show e sinal de reserva com PIX oficial do Banco Central (EMV / CRECI/SP 248.910-F).
    - **Condomínio & Síndico (Marcos · Residencial Aurora):** Reserva de salão de festas, regimento interno e taxa de limpeza via Pix.
    - **Autoescola (Natália · Piloto Seguro):** Matrícula CNH AB, tabela de preços e agendamento de aula teórica inaugural.
    - **Oficina Mecânica (Danilo · Auto Center V8):** Leitura de foto de luz de injeção no painel e reserva de box com scanner.
